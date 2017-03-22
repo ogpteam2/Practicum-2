@@ -13,6 +13,9 @@ public class Directory  {
 	private final Date creationTime = new Date();
 	private Date modificationTime = null;
 	
+    /**********************************************************
+     * constructors
+     **********************************************************/
 	
     /**********************************************************
      * name - total programming
@@ -162,10 +165,6 @@ public class Directory  {
                  (date.getTime() <= System.currentTimeMillis()) );
     }
 
-    /**********************************************************
-     * writable
-     **********************************************************/
-    
     
     /**
      * Set the modification time of this file to the current time.
@@ -184,6 +183,15 @@ public class Directory  {
     private void setModificationTime() {
         modificationTime = new Date();
     }
+    
+    public boolean hasOverlappingUsePeriod(Directory other) {
+    	// nog te implementeren
+    	return false;
+    }
+    
+    /**********************************************************
+     * writable
+     **********************************************************/
     
     /**
      * Check whether this file is writable.
@@ -206,4 +214,12 @@ public class Directory  {
     public void setWritable(boolean isWritable) {
         this.isWritable = isWritable;
     }
+    
+    /**********************************************************
+     * directory methods
+     **********************************************************/
+    
+    
+    
+    
 }
