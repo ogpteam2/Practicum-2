@@ -1,6 +1,7 @@
 package filesystem;
 import be.kuleuven.cs.som.annotate.*;
-
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -14,6 +15,8 @@ import java.util.Date;
  *          | isValidCreationTime(getCreationTime())
  * @invar   Each file must have a valid modification time.
  *          | canHaveAsModificationTime(getModificationTime())
+ * @invar   Each file must have a valid type
+ * 			| canHaveAsType(getType())
  * @author  Mark Dreesen
  * @author  Tommy Messelis
  * @version 3.0
@@ -25,7 +28,7 @@ public class File {
      **********************************************************/
 
     /**
-     * Initialize a new file with given name, size and writability.
+     * Initialize a new file in a given directory with given name, size, writability and type.
      *
      * @param  	name
      *         	The name of the new file.
@@ -33,6 +36,10 @@ public class File {
      *         	The size of the new file.
      * @param  	writable
      *         	The writability of the new file.
+     * @param   type
+     *          the type of the file
+     * @param   dir
+     * 			the directory in which you want to create a file
      * @effect  The name of the file is set to the given name.
      * 			If the given name is not valid, a default name is set.
      *          | setName(name)
@@ -46,28 +53,64 @@ public class File {
      *          | (new.getCreationTime().getTime() <= (new System).currentTimeMillis())
      * @post    The new file has no time of last modification.
      *          | new.getModificationTime() == null
+     * @post	the type of the file is set to the given type
+     * 			if the type is not valid the default type is used (".txt").   
      */
-	public File(String name, int size, boolean writable) {
+	public File(Directory dir,String name, int size, boolean writable,String filetype) {
         setName(name);
         setSize(size);
         setWritable(writable);
+        if (canHaveAsType(filetype)){
+        	this.filetype = filetype;
+        }
+        else {
+        	this.filetype = "txt";
+        }
+        this.dir = dir;
+        // nog file in directory steken hier if (dir == null) > rootfile
+        
     }
+	
+	/**
+	 * Makes a new rootfile
+	 * @param name
+	 * 		  the name of the file
+	 * @param size
+	 * 		  the size of the file
+	 * @param writable
+	 * 	      the writability of the file
+	 * @param type
+	 * 		  the type of the file
+	 */
+	public File(String name,int size,boolean writable,String type){
+		this(null,name,size,writable,type);
+	}
+	
+	/**
+	 * Makes a new empty file in the given directory, name and type
+	 * @param dir
+	 * 		  the directory in which the file is stored
+	 * @param name
+	 * 		  the name of the file
+	 * @param type
+	 * 		  the type of the file
+	 */
+	public File(Directory dir,String name,String type){
+		this(dir,name,0,true,type);
+	}
+	
+	/**
+	 * Makes a new rootfile with given name and type
+	 * @param name
+	 * 		  the name of the file
+	 * @param type
+	 * 		  the type of the file
+	 */
+	public File(String name,String type){
+		this(null,name,0,true,type);
+	}
 
-    /**
-     * Initialize a new file with given name.
-     *
-     * @param   name
-     *          The name of the new file.
-     * @effect  This new file is initialized with the given name, a zero size
-     * 			and true writability
-     *         | this(name,0,true)
-     */
-    public File(String name) {
-        this(name,0,true);
-    }
-    
-    
-    
+
     /**********************************************************
      * name - total programming
      **********************************************************/
@@ -436,4 +479,61 @@ public class File {
         this.isWritable = isWritable;
     }
     
-}
+    /**********************************************************
+     * file type: total programming
+     **********************************************************/
+ 
+    /**
+     * the type of the file
+     */
+    private final String filetype;
+
+    /**
+     * checks of the type is valid
+     * @param type
+     * 	      the type you want to check if it is valid
+     * @return true
+     * 		   if the type is valid
+     * 		   false
+     * 		   of the type is not valid
+     */
+    private static boolean canHaveAsType(String type){
+    	ArrayList<String> allowedTypes = new ArrayList<String>() {{ add("txt"); add("pdf"); add("java"); }};
+    	for (String str: allowedTypes){
+    	    if(str.trim().contains(type))
+    	        return true;
+    	}
+    	return false;
+    }
+    
+    /**
+     * getting the filetype
+     * @return the filetype
+     */
+    @Basic @Raw
+    private String getType(){
+    	return this.filetype;
+    }
+    
+    /**********************************************************
+     * directory
+     **********************************************************/
+    
+    /**
+     * the directory where the file is stored
+     */
+    private Directory dir;
+    
+    /**
+     * gives the directory where the file is stored.
+     * @return the directory where the file is stored or null if it is a rootfile
+     */
+    public Directory getDir(){
+    	return this.dir;
+    }
+    
+    
+    
+    
+    
+}	
