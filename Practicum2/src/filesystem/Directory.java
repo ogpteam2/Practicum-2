@@ -184,9 +184,35 @@ public class Directory  {
         modificationTime = new Date();
     }
     
+    /**
+     * Return whether this file and the given other file have an
+     * overlapping use period.
+     *
+     * @param 	other
+     *        	The other file to compare with.
+     * @return 	False if the other file is not effective
+     * 			False if the prime object does not have a modification time
+     * 			False if the other file is effective, but does not have a modification time
+     * 			otherwise, true if and only if the open time intervals of this file and
+     * 			the other file overlap
+     *        	| if (other == null) then result == false else
+     *        	| if ((getModificationTime() == null)||
+     *        	|       other.getModificationTime() == null)
+     *        	|    then result == false
+     *        	|    else 
+     *        	| result ==
+     *        	| ! (getCreationTime().before(other.getCreationTime()) && 
+     *        	|	 getModificationTime().before(other.getCreationTime()) ) &&
+     *        	| ! (other.getCreationTime().before(getCreationTime()) && 
+     *        	|	 other.getModificationTime().before(getCreationTime()) )
+     */
     public boolean hasOverlappingUsePeriod(Directory other) {
-    	// nog te implementeren
-    	return false;
+        if (other == null) return false;
+        if(getModificationTime() == null || other.getModificationTime() == null) return false;
+        return ! (getCreationTime().before(other.getCreationTime()) && 
+        	      getModificationTime().before(other.getCreationTime()) ) &&
+        	   ! (other.getCreationTime().before(getCreationTime()) && 
+        	      other.getModificationTime().before(getCreationTime()) );
     }
     
     /**********************************************************
