@@ -21,7 +21,7 @@ import java.util.Date;
  * @author  Tommy Messelis
  * @version 3.0
  */
-public class File {
+public class File extends FilesystemItem{
 
     /**********************************************************
      * Constructors
@@ -57,6 +57,7 @@ public class File {
      * 			if the type is not valid the default type is used (".txt").   
      */
 	public File(Directory dir,String name, int size, boolean writable,String filetype) {
+		super(dir, name, writable);
         setName(name);
         setSize(size);
         setWritable(writable);
