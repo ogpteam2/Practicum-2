@@ -61,16 +61,12 @@ public class File extends FilesystemItem{
 	public File(Directory dir,String name, int size, boolean writable,String filetype) {
 		super(dir, name, writable);
         setSize(size);
-        setWritable(writable);
         if (canHaveAsType(filetype)){
         	this.filetype = filetype;
         }
         else {
         	this.filetype = "txt";
-        }
-        this.dir = dir;
-        // nog file in directory steken hier if (dir == null) > rootfile
-        
+        } 
     }
 	
 	/**
@@ -226,42 +222,6 @@ public class File extends FilesystemItem{
         	throw new NotWritableException(this);
         }
     }
-
-    
-
-    /**********************************************************
-     * creationTime
-     **********************************************************/
-
-    /**
-     * Variable referencing the time of creation.
-     */
-    private final Date creationTime = new Date();
-   
-    /**
-     * Return the time at which this file was created.
-     */
-    @Raw @Basic @Immutable
-    public Date getCreationTime() {
-        return creationTime;
-    }
-
-    /**
-     * Check whether the given date is a valid creation time.
-     *
-     * @param  	date
-     *         	The date to check.
-     * @return 	True if and only if the given date is effective and not
-     * 			in the future.
-     *         	| result == 
-     *         	| 	(date != null) &&
-     *         	| 	(date.getTime() <= System.currentTimeMillis())
-     */
-    public static boolean isValidCreationTime(Date date) {
-    	return 	(date!=null) &&
-    			(date.getTime()<=System.currentTimeMillis());
-    }
-
         
     /**********************************************************
      * file type: total programming
@@ -321,8 +281,5 @@ public class File extends FilesystemItem{
 		return "new-file";
 	}
     
-
-    
-    
-    
+	
 }	

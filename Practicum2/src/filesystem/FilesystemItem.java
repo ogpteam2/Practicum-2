@@ -195,8 +195,8 @@ public abstract class FilesystemItem {
      *         | (new.getModificationTime().getTime() <=
      *         |                    (new System).currentTimeMillis())
      */
-    @Model 
-    private void setModificationTime() {
+    @Model
+	protected void setModificationTime() {
         modificationTime = new Date();
     }
 
@@ -270,7 +270,43 @@ public abstract class FilesystemItem {
     
     private Directory directory = null;
     
+    @Basic @Raw
+	private void setDirectory(Directory dir){
+		this.directory = dir;
+	}
+    
+    @Basic
+    public Directory getDirectory(){
+    	return directory;
+    }
+    
     public boolean isValidDirectory(Directory dir){
-    	return dir 
+    	return dir.canBeAddedToDirectory(this) && dir != null && dir.isWritable();
+    }
+    
+    public boolean isRoot(){
+    	return directory == null;
+    }
+    
+    public void makeRoot() throws NotWritableException{
+		if (!isRoot()){
+			if (directory.isWritable()){
+				if (directory.hasAsItem(this)){
+					directory.removeItem(this);
+				}
+				setDirectory(null);
+			}
+			else{
+				throw new NotWritableException(directory);
+			}
+		}
+	}
+    
+    public Directory getRoot(){
+    	Directory parent = this.getDirectory();
+    	while(parent.getDirectory() != null){
+    		parent = parent.getDirectory();
+    	}
+    	return parent;
     }
 }
