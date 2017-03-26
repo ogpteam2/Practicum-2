@@ -2,9 +2,9 @@ package filesystem;
 import be.kuleuven.cs.som.annotate.*;
 
 /**
- * A class for signaling illegal attempts to change a file.
+ * A class for signalling illegal attempts to change a file.
  */
-public class FileNotWritableException extends RuntimeException {
+public class NotWritableException extends RuntimeException {
 
 	/**
 	 * Required because this class inherits from Exception
@@ -14,10 +14,10 @@ public class FileNotWritableException extends RuntimeException {
 	/**
 	 * Variable referencing the file to which change was denied.
 	 */
-	private final File file;
+	private final FilesystemItem item;
 
 	/**
-	 * Initialize this new file not writable exception involving the
+	 * Initialise this new file not writable exception involving the
 	 * given file.
 	 * 
 	 * @param	file
@@ -27,16 +27,16 @@ public class FileNotWritableException extends RuntimeException {
 	 * 			| new.getFile() == file
 	 */
 	@Raw
-	public FileNotWritableException(File file) {
-		this.file = file;
+	public NotWritableException(FilesystemItem item) {
+		this.item = item;
 	}
 	
 	/**
 	 * Return the file involved in this file not writable exception.
 	 */
 	@Raw @Basic
-	public File getFile() {
-		return file;
+	public FilesystemItem getFilesystemItem() {
+		return item;
 	}
 	
 	

@@ -182,7 +182,7 @@ public class File extends FilesystemItem{
      * @effect  The size of this file is increased with the given delta.
      *          | changeSize(delta)
      */
-    public void enlarge(int delta) throws FileNotWritableException {
+    public void enlarge(int delta) throws NotWritableException {
         changeSize(delta);
     }
 
@@ -197,7 +197,7 @@ public class File extends FilesystemItem{
      * @effect  The size of this file is decreased with the given delta.
      *          | changeSize(-delta)
      */
-    public void shorten(int delta) throws FileNotWritableException {
+    public void shorten(int delta) throws NotWritableException {
         changeSize(-delta);
     }
 
@@ -213,17 +213,17 @@ public class File extends FilesystemItem{
      *         | setSize(getSize()+delta)
      * @effect The modification time is updated.
      *         | setModificationTime()
-     * @throws FileNotWritableException(this)
+     * @throws NotWritableException(this)
      *         This file is not writable.
      *         | ! isWritable()
      */
     @Model 
-    private void changeSize(int delta) throws FileNotWritableException{
+    private void changeSize(int delta) throws NotWritableException{
         if (isWritable()) {
             setSize(getSize()+delta);
             setModificationTime();            
         }else{
-        	throw new FileNotWritableException(this);
+        	throw new NotWritableException(this);
         }
     }
 

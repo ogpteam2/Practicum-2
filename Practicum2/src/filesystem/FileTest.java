@@ -91,7 +91,7 @@ public class FileTest {
 	}
 
 	@Test
-	public void testChangeName_LegalCase() throws FileNotWritableException{
+	public void testChangeName_LegalCase() throws NotWritableException{
 		Date timeBeforeSetName = new Date();
 		fileString.changeName("NewLegalName");
 		Date timeAfterSetName = new Date();
@@ -102,13 +102,13 @@ public class FileTest {
 		assertFalse(timeAfterSetName.before(fileString.getModificationTime()));
 	}
 	
-	@Test (expected = FileNotWritableException.class)
-	public void testChangeName_FileNotWritable() throws FileNotWritableException{
+	@Test (expected = NotWritableException.class)
+	public void testChangeName_FileNotWritable() throws NotWritableException{
 		fileNotWritable.changeName("NewLegalName");
 	}
 	
 	@Test
-	public void testChangeName_IllegalName() throws FileNotWritableException{
+	public void testChangeName_IllegalName() throws NotWritableException{
 		fileString.changeName("$IllegalName$");
 		assertEquals("bestand.txt",fileString.getName());
 		assertNull(fileString.getModificationTime());
@@ -130,7 +130,7 @@ public class FileTest {
 	}
 
 	@Test
-	public void testEnlarge_LegalCase() throws FileNotWritableException{
+	public void testEnlarge_LegalCase() throws NotWritableException{
 		File file = new File("bestand.txt",File.getMaximumSize()-1,true);
 		Date timeBeforeEnlarge = new Date();
 		file.enlarge(1);
@@ -141,13 +141,13 @@ public class FileTest {
 		assertFalse(timeAfterEnlarge.before(file.getModificationTime()));  
 	}
 	
-	@Test (expected = FileNotWritableException.class)
-	public void testEnlarge_FileNotWritable() throws FileNotWritableException{
+	@Test (expected = NotWritableException.class)
+	public void testEnlarge_FileNotWritable() throws NotWritableException{
 		fileNotWritable.enlarge(1);
 	}
 	
 	@Test
-	public void testShorten_LegalCase() throws FileNotWritableException{
+	public void testShorten_LegalCase() throws NotWritableException{
 		fileStringIntBoolean.shorten(1);
 		Date timeAfterShorten = new Date();		
 		assertEquals(fileStringIntBoolean.getSize(),99);
@@ -156,8 +156,8 @@ public class FileTest {
 		assertFalse(timeAfterShorten.before(fileStringIntBoolean.getModificationTime()));
 	}
 	
-	@Test (expected = FileNotWritableException.class)
-	public void testShorten_FileNotWritable() throws FileNotWritableException{
+	@Test (expected = NotWritableException.class)
+	public void testShorten_FileNotWritable() throws NotWritableException{
 		fileNotWritable.shorten(1);
 	}
 
@@ -187,7 +187,7 @@ public class FileTest {
 	}
 
 	@Test
-	public void testHasOverlappingUsePeriod_UnmodifiedFiles() throws FileNotWritableException {
+	public void testHasOverlappingUsePeriod_UnmodifiedFiles() throws NotWritableException {
 		// one = implicit argument ; other = explicit argument
 		File one = new File("one");
 		sleep(); // sleep() to be sure that one.getCreationTime() != other.getCreationTime()
@@ -209,7 +209,7 @@ public class FileTest {
 	}
 	
 	@Test
-	public void testHasOverlappingUsePeriod_ModifiedNoOverlap() throws FileNotWritableException {
+	public void testHasOverlappingUsePeriod_ModifiedNoOverlap() throws NotWritableException {
 		// one = implicit argument ; other = explicit argument
 		File one, other;
 		one = new File("one");
@@ -234,7 +234,7 @@ public class FileTest {
 	}
 	
 	@Test
-	public void testHasOverlappingUsePeriod_ModifiedOverlap_A() throws FileNotWritableException {
+	public void testHasOverlappingUsePeriod_ModifiedOverlap_A() throws NotWritableException {
 		// one = implicit argument ; other = explicit argument
 		//A Test one created before other created before one modified before other modified
 	    File one, other;
@@ -249,7 +249,7 @@ public class FileTest {
 	}
 	
 	@Test
-	public void testHasOverlappingUsePeriod_ModifiedOverlap_B() throws FileNotWritableException {
+	public void testHasOverlappingUsePeriod_ModifiedOverlap_B() throws NotWritableException {
 		// one = implicit argument ; other = explicit argument
 		//B Test one created before other created before other modified before one modified
        	File one, other;
@@ -264,7 +264,7 @@ public class FileTest {
 	}
 	
 	@Test
-	public void testHasOverlappingUsePeriod_ModifiedOverlap_C() throws FileNotWritableException {
+	public void testHasOverlappingUsePeriod_ModifiedOverlap_C() throws NotWritableException {
 		// one = implicit argument ; other = explicit argument
 		//C Test other created before one created before other modified before one modified
         File one, other;
@@ -279,7 +279,7 @@ public class FileTest {
 	}
 	
 	@Test
-	public void testHasOverlappingUsePeriod_ModifiedOverlap_D() throws FileNotWritableException {
+	public void testHasOverlappingUsePeriod_ModifiedOverlap_D() throws NotWritableException {
 		// one = implicit argument ; other = explicit argument
 		//D Test other created before one created before one modified before other modified
 		File one, other;

@@ -96,18 +96,18 @@ public abstract class FilesystemItem {
      * 			of this file is updated.
      *          | if (isValidName(name) && isWritable())
      *          | then setModificationTime()
-     * @throws  FileNotWritableException(this)
+     * @throws  NotWritableException(this)
      *          This file is not writable
      *          | ! isWritable() 
      */
-    public void changeName(String name) throws FileNotWritableException {
+    public void changeName(String name) throws NotWritableException {
         if (isWritable()) {
             if (isValidName(name)){
             	setName(name);
                 setModificationTime();
             }
         } else {
-            throw new FileNotWritableException(this);
+            throw new NotWritableException(this);
         }
     }
     
@@ -264,4 +264,13 @@ public abstract class FilesystemItem {
     			(date.getTime()<=System.currentTimeMillis());
     }
 
+    /**********************************************************
+     * Directory Containment
+     **********************************************************/
+    
+    private Directory directory = null;
+    
+    public boolean isValidDirectory(Directory dir){
+    	return dir 
+    }
 }
