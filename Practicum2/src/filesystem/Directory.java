@@ -1,251 +1,238 @@
 package filesystem;
+
 import be.kuleuven.cs.som.annotate.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
-public class Directory  { 
-
-	private ArrayList<File> files;
+public class Directory extends FilesystemItem {
+	
 	private Directory parent;
-	private String name;
+	private String itemName;
 	private boolean isWritable;
 	private final Date creationTime = new Date();
 	private Date modificationTime = null;
+
+	/**********************************************************
+	 * constructors
+	 **********************************************************/
 	
-    /**********************************************************
-     * constructors
-     **********************************************************/
+	/**
+	 * Full constructor of the class, initialising directory with 
+	 * given parent, name and writability.
+	 * 
+	 * @param	dir
+	 * 			Parent of the new directory.
+	 * @param	name
+	 * 			Name of the new directory
+	 * @param	writable
+	 * 			Writability of the new directory.
+	 * @effect	The directory is initialised as a FileSystemObject with
+	 * 			the given directory, name and writablilty.
+	 * 			| new FileSystemObject(dir, name, writable)
+	 */
 	
-    /**********************************************************
-     * name - total programming
-     **********************************************************/
+	public Directory(Directory dir, String name, boolean writable) {
+		super(dir, name, writable);
+	}
+
+	public Directory(String name, boolean writable) {
+		this(null, name, writable);
+	}
+
+	public Directory(String name) {
+		this(null, name, true);
+	}
+
+	/**********************************************************
+	 * name - total programming
+	 **********************************************************/
+
+	/**
+	 * Requirement by superclass: give name to use when given name is not valid.
+	 *
+	 * @return A valid file name. | isValidName(result)
+	 */
+	@Raw
+	public String getDefaultName() {
+		return "new_directory";
+	}
+
+	/**********************************************************
+	 * directory content
+	 **********************************************************/
 	
-    /**
-     * Return the name of this file.
-     */
-    @Raw @Basic 
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Check whether the given name is a legal name for a file.
-     * 
-     * @param  	name
-     *			The name to be checked
-     * @return	True if the given string is effective, not
-     * 			empty and consisting only of letters, digits, dots,
-     * 			hyphens and underscores; false otherwise.
-     * 			| result ==
-     * 			|	(name != null) && name.matches("[a-zA-Z_0-9.-]+")
-     */
-    public static boolean isValidName(String name) {
-        return (name != null && name.matches("[a-zA-Z_0-9.-]+"));
-    }
-    
-    /**
-     * Set the name of this file to the given name.
-     *
-     * @param   name
-     * 			The new name for this file.
-     * @post    If the given name is valid, the name of
-     *          this file is set to the given name,
-     *          otherwise the name of the file is set to a valid name (the default).
-     *          | if (isValidName(name))
-     *          |      then new.getName().equals(name)
-     *          |      else new.getName().equals(getDefaultName())
-     */
-    @Raw @Model 
-    private void setName(String name) {
-        if (isValidName(name)) {
-        		this.name = name;
-        } else {
-        		this.name = getDefaultName();
-        }
-    }
-    
-    /**
-     * Return the name for a new file which is to be used when the
-     * given name is not valid.
-     *
-     * @return   A valid file name.
-     *         | isValidName(result)
-     */
-    @Raw @Model
-    private String getDefaultName() {
-        return "new_directory";
-    }
-
-    /**
-     * Change the name of this file to the given name.
-     *
-     * @param	name
-     * 			The new name for this file.
-     * @effect  The name of this file is set to the given name, 
-     * 			if this is a valid name and the file is writable, 
-     * 			otherwise there is no change.
-     * 			| if (isValidName(name) && isWritable())
-     *          | then setName(name)
-     * @effect  If the name is valid and the file is writable, the modification time 
-     * 			of this file is updated.
-     *          | if (isValidName(name) && isWritable())
-     *          | then setModificationTime()
-     * @throws  FileNotWritableException(this)
-     *          This file is not writable
-     *          | ! isWritable() 
-     */
-    public void changeName(String name) throws DirectoryNotWritableException {
-        if (isWritable()) {
-            if (isValidName(name)){
-            	setName(name);
-                setModificationTime();
-            }
-        } else {
-            throw new DirectoryNotWritableException(this);
-        }
-    }
-    
-    /**
-     * Return the time at which this file was created.
-     */
-    @Raw @Basic @Immutable
-    public Date getCreationTime() {
-        return creationTime;
-    }
-
-    /**
-     * Check whether the given date is a valid creation time.
-     *
-     * @param  	date
-     *         	The date to check.
-     * @return 	True if and only if the given date is effective and not
-     * 			in the future.
-     *         	| result == 
-     *         	| 	(date != null) &&
-     *         	| 	(date.getTime() <= System.currentTimeMillis())
-     */
-    public static boolean isValidCreationTime(Date date) {
-    	return 	(date!=null) &&
-    			(date.getTime()<=System.currentTimeMillis());
-    }
-
-    
-
-    /**********************************************************
-     * modificationTime
-     **********************************************************/
-
-   
-    /**
-     * Return the time at which this file was last modified, that is
-     * at which the name or size was last changed. If this file has
-     * not yet been modified after construction, null is returned.
-     */
-    @Raw @Basic
-    public Date getModificationTime() {
-        return modificationTime;
-    }
-
-    /**
-     * Check whether this file can have the given date as modification time.
-     *
-     * @param	date
-     * 			The date to check.
-     * @return 	True if and only if the given date is either not effective
-     * 			or if the given date lies between the creation time and the
-     * 			current time.
-     *         | result == (date == null) ||
-     *         | ( (date.getTime() >= getCreationTime().getTime()) &&
-     *         |   (date.getTime() <= System.currentTimeMillis())     )
-     */
-    public boolean canHaveAsModificationTime(Date date) {
-        return (date == null) ||
-               ( (date.getTime() >= getCreationTime().getTime()) &&
-                 (date.getTime() <= System.currentTimeMillis()) );
-    }
-
-    
-    /**
-     * Set the modification time of this file to the current time.
-     *
-     * @post   The new modification time is effective.
-     *         | new.getModificationTime() != null
-     * @post   The new modification time lies between the system
-     *         time at the beginning of this method execution and
-     *         the system time at the end of method execution.
-     *         | (new.getModificationTime().getTime() >=
-     *         |                    System.currentTimeMillis()) &&
-     *         | (new.getModificationTime().getTime() <=
-     *         |                    (new System).currentTimeMillis())
-     */
-    @Model 
-    private void setModificationTime() {
-        modificationTime = new Date();
-    }
-    
-    /**
-     * Return whether this file and the given other file have an
-     * overlapping use period.
-     *
-     * @param 	other
-     *        	The other file to compare with.
-     * @return 	False if the other file is not effective
-     * 			False if the prime object does not have a modification time
-     * 			False if the other file is effective, but does not have a modification time
-     * 			otherwise, true if and only if the open time intervals of this file and
-     * 			the other file overlap
-     *        	| if (other == null) then result == false else
-     *        	| if ((getModificationTime() == null)||
-     *        	|       other.getModificationTime() == null)
-     *        	|    then result == false
-     *        	|    else 
-     *        	| result ==
-     *        	| ! (getCreationTime().before(other.getCreationTime()) && 
-     *        	|	 getModificationTime().before(other.getCreationTime()) ) &&
-     *        	| ! (other.getCreationTime().before(getCreationTime()) && 
-     *        	|	 other.getModificationTime().before(getCreationTime()) )
-     */
-    public boolean hasOverlappingUsePeriod(Directory other) {
-        if (other == null) return false;
-        if(getModificationTime() == null || other.getModificationTime() == null) return false;
-        return ! (getCreationTime().before(other.getCreationTime()) && 
-        	      getModificationTime().before(other.getCreationTime()) ) &&
-        	   ! (other.getCreationTime().before(getCreationTime()) && 
-        	      other.getModificationTime().before(getCreationTime()) );
-    }
-    
-    /**********************************************************
-     * writable
-     **********************************************************/
-    
-    /**
-     * Check whether this file is writable.
-     */
-    @Raw @Basic
-    public boolean isWritable() {
-        return isWritable;
-    }
-
-    /**
-     * Set the writability of this file to the given writability.
-     *
-     * @param isWritable
-     *        The new writability
-     * @post  The given writability is registered as the new writability
-     *        for this file.
-     *        | new.isWritable() == isWritable
-     */
-    @Raw 
-    public void setWritable(boolean isWritable) {
-        this.isWritable = isWritable;
-    }
-    
-    /**********************************************************
-     * directory methods
-     **********************************************************/
-    
-    
-    
-    
+	private ArrayList<FilesystemItem> contents = new ArrayList<>();
+	
+	/**********************************************************
+	 * content validity checking
+	 **********************************************************/
+	
+	/**
+	 * Checks if the given FilesystemItem could be added to the directory
+	 * @param 	item
+	 * 			item to check for content validity
+	 * @return 	whether item can be safely added to the directory
+	 */
+	
+	public boolean canBeAddedToDirectory(FilesystemItem item){
+		if (exists(item.getName())) return false;
+		
+		else if (item.getClass() == Directory.class && 
+				(isDirectOrIndirectSubDirectoryOf((Directory) item) || item == this)) //protection against directory loop
+				return false;
+		
+		else return true;
+	}
+	
+	/**
+	 * Recursively checks if the given directory is one of the parents of
+	 * this directory
+	 * @param 	directory
+	 * 			directory to check for parenthood of this directory
+	 * @return	whether directory is parent of this directory
+	 */
+	public boolean isDirectOrIndirectSubDirectoryOf(Directory directory){
+		if(this.isRoot()) return false;
+		else {
+			Directory parent = getDirectory();
+			if(parent == directory) return true;
+			else return parent.isDirectOrIndirectSubDirectoryOf(directory);
+		}
+	}
+	
+	/**********************************************************
+	 * Content manipulation
+	 **********************************************************/
+	
+	public void addItem(FilesystemItem item) throws IllegalArgumentException, NotWritableException{
+		if(canBeAddedToDirectory(item)){
+			if (isWritable()){
+				this.contents.add(binarySearchForItem(item.getName()), item);
+			}
+			else throw new NotWritableException(this);
+		}
+		else throw new IllegalArgumentException("The given object is not valid content for this directory.");
+	}
+	
+	public void removeItem(FilesystemItem item) throws IllegalArgumentException, NotWritableException{
+		if(hasAsItem(item)){
+			if(isWritable()){
+				this.contents.remove(item);
+				if(!this.isRoot()) this.makeRoot();
+			}
+			else throw new NotWritableException(this);
+		}
+		else throw new IllegalArgumentException();
+	}
+	
+	/**********************************************************
+	 * Indexing and item existence
+	 **********************************************************/
+	
+	public FilesystemItem getItemAt(int index) throws IndexOutOfBoundsException{
+		if (index > 0 && index <= this.contents.size()){
+			return this.contents.get(index);
+		} else {
+			throw new IndexOutOfBoundsException();
+		}
+	}
+	
+	public boolean exists(String itemName){
+		for(FilesystemItem item: this.contents){
+			if(item.getName().toLowerCase().equals(itemName.toLowerCase())){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public int getNbItems(){
+		return contents.size();
+	}
+	
+	/**
+	 * Searches for an item in the directory with the given name using
+	 * the binarySearchForItem method.
+	 * @param 	itemName
+	 * 			name of the required item
+	 * @return	the required item
+	 * @throws 	IllegalArgumentException
+	 * 			if no item exists with the given name within this directory, this error is thrown.
+	 */
+	
+	public FilesystemItem getItem(String itemName) throws IllegalArgumentException{
+		if (!exists(itemName)){
+			throw new IllegalArgumentException("No item exists in this directory with the given name!");
+		}
+		else{
+			return this.contents.get(binarySearchForItem(itemName));
+		}
+	}
+	
+	/**
+	 * Implements the binary search algorithm (O(log(n)) to determine the index
+	 * of an element in an ArrayList
+	 * @param 	itemName
+	 * 			name of the item for which the index is required
+	 * @return	the index of the item for which the name was given
+	 */
+	
+	private int binarySearchForItem(String itemName){
+		itemName = itemName.toLowerCase();
+		int lower = 0;
+		int upper = this.contents.size();
+		int middle;
+		while (upper != lower){
+			int comparedCharIndex = 0;
+			middle = Math.floorDiv(upper + lower, 2);
+			
+			String middleItemName = this.contents.get(middle).getName().toLowerCase();
+			
+			while(true){
+				if(middleItemName.charAt(comparedCharIndex) > itemName.charAt(comparedCharIndex)){
+					upper = middle;
+					break;
+				} else if (middleItemName.charAt(comparedCharIndex) > itemName.charAt(comparedCharIndex)) {
+					lower = middle++;
+					break;
+				} else {
+					if(comparedCharIndex == itemName.length() - 1){
+						upper = middle;
+						break;
+					} else {
+						comparedCharIndex++;
+					}
+				}
+			}
+		}
+		return lower;
+	}
+	
+	/**
+	 * Returns whether the given item exists within the directory or not
+	 * @param 	item
+	 * 			item to check existance of
+	 * @return	existance of the item
+	 */
+	public boolean hasAsItem(FilesystemItem item){
+		return contents.contains(item);
+	}
+	
+	/**
+	 * Returns the index of the given item within the directory if it exists
+	 * @param 	item
+	 * 			item to get the index of
+	 * @return	index of the given item
+	 * @throws 	IllegalArgumentException
+	 * 			throws this error when item does not exist within this directory
+	 */
+	public int getIndexOf(FilesystemItem item) throws IllegalArgumentException{
+		if (hasAsItem(item)){
+			return contents.indexOf(item);
+		} else {
+			throw new IllegalArgumentException("No given object exists within this directory");
+		}
+	}
+	
 }
